@@ -10,7 +10,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^3.0.2",
+    "config": "^2.0.1",
+    "dotenv": "^6.1.0",
     "express": "^4.16.3",
-    "mongoose": "^5.2.13"
+    "joi": "^13.7.0",
+    "joi-objectid": "^2.0.0",
+    "jsonwebtoken": "^8.3.0",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.2.13",
+    "validator": "^10.8.0"
   }
 }
