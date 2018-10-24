@@ -57,12 +57,16 @@ router.get('/:toolId/:chamber', async (req, res) => {
 
   router.put('/:recordId',auth,async(req,res)=>{
     //find the given record
-    const record = await Record.findByIdAndUpdate(req.params.recordId,{
-        date: req.body.date,
+    /*const record = await Record.findByIdAndUpdate(req.params.recordId,{
+        description : req.body.description
+        
+    });*/
+    const record = await Record.findOneAndUpdate(req.params.recordId,{
         description : req.body.description
     });
     if(!record) return res.status(404).send('record not found');
-    res.json(record);
+    const response = record
+    res.json(response);
   });
 
   
