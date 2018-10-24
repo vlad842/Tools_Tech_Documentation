@@ -1,10 +1,11 @@
 const express=require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes');
-const config = require('config');
 const env = require('dotenv').config();
+const winston = require('winston')
 
 const app= express();
+winston.add(winston.transports.File, {filename: 'logfile.log'});
 if(!process.env.SECRET_KEY){
     console.error('FATAL ERROR : jwtPrivateKey is not defined');
     process.exit(1);
