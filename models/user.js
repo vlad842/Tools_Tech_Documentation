@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const env = require('dotenv').config();
 
 const UserSchema=new mongoose.Schema({
     full_name:{
@@ -23,6 +25,13 @@ const UserSchema=new mongoose.Schema({
         minlength : 5,
         maxlength :1024
     },
+    isAdmin: Boolean
 });
 
-module.exports = mongoose.model('User',UserSchema);
+UserSchema.methods.generateAuthToken = function(){
+    const token = jwt.sign({id: this._id, isAdmin: this.isAdmin},process.env.SECRET_KEY);
+    return token;
+}
+
+const User =  mongoose.model('User',UserSchema);
+module.exports = User;

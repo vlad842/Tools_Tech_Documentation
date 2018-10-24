@@ -5,7 +5,7 @@ const config = require('config');
 const env = require('dotenv').config();
 
 const app= express();
-if(!process.env.jwtPrivateKey){
+if(!process.env.SECRET_KEY){
     console.error('FATAL ERROR : jwtPrivateKey is not defined');
     process.exit(1);
 }
@@ -16,6 +16,6 @@ app.use(routes);
 mongoose.connect('mongodb://localhost/tools_tech_doc_db',{useNewUrlParser:true})
     .then(()=>console.log('connected to mongo'))
     .catch(err=>console.error('couldnt connect to mongoDB',err));
-
+mongoose.set('useCreateIndex', true);
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));

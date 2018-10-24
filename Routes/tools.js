@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const {Tool, validateTool} = require('../models/tool');
-router.post('/work', (req,res) => {
 
-    console.log('work!!!');
-});
-
-router.post('/addTool',async (req,res)=>{
+router.post('/addTool',auth,async (req,res)=>{
 
     const {serialNumber,chambers} = req.body;
     let toolToInsert = await Tool.findOne({serialNumber : req.body.serialNumber});

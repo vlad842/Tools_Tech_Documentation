@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
 const {Tool} =require('../models/tool');
 const {Chamber} = require('../models/chamber');
 const {User} = require('../models/user')
@@ -11,7 +12,7 @@ router.get('/',async (req,res)=>{
     res.send(records);
 })
 
-router.post('/addRecord', async (req,res) => {
+router.post('/addRecord',auth, async (req,res) => {
 const {tool_id, chamber_Num, user_id, description, status} = req.body;
 let res_status= 200;
 let data = {};
@@ -54,7 +55,7 @@ router.get('/:toolId/:chamber', async (req, res) => {
     }
   });
 
-  router.put('/:recordId',async(req,res)=>{
+  router.put('/:recordId',auth,async(req,res)=>{
     //find the given record
     const record = await Record.findByIdAndUpdate(req.params.recordId,{
         date: req.body.date,

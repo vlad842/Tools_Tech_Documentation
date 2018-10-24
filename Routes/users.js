@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const env = require('dotenv').config();
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
+const jwt = require('jsonwebtoken');
 const User = require('./../models/user');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
@@ -26,11 +30,11 @@ router.post('/signup',async (req,res)=>{
         status = 400;
         data = error;
     }
-
-    res.status(status).json(_.pick(userToInsert, ['full_name', 'email']));
+    const token = userToInsert.generateAuthToken();
+    res.status(status).header('x-auth',token).json(_.pick(userToInsert, ['full_name', 'email']));
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',auth,admin, async (req, res) => {
     const user = await User.findByIdAndRemove(req.params.id);
   
     if (!user) return res.status(404).send('The user with the given ID was not found.');
