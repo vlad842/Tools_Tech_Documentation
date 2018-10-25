@@ -1,6 +1,5 @@
 const express=require('express');
 const mongoose = require('mongoose');
-const routes = require('./routes');
 const env = require('dotenv').config();
 const winston = require('winston');
 const app= express();

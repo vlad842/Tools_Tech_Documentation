@@ -9,11 +9,11 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
 router.post('/signup',async (req,res)=>{
-    const {full_name,email,password} = req.body;
+    const {full_name,email,password, isAdmin} = req.body;
     let userToInsert = await User.findOne({email : req.body.email});
     if(userToInsert) return res.status(400).send('user already registered');
 
-     userToInsert = new User({full_name,email,password}) ;
+     userToInsert = new User({full_name,email,password, isAdmin}) ;
      const salt = await bcrypt.genSalt(10);
      userToInsert.password = await bcrypt.hash(userToInsert.password, salt);
 

@@ -10,7 +10,7 @@ const ChamberSchema=new mongoose.Schema({
     kind : {
         type: String,
         required : true,
-        enum:['RCT','RC','TI','PLY','BE']
+        enum:['RTC','RC','TI','PLY','BE']
     }
 });
 

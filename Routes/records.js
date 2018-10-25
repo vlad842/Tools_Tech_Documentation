@@ -13,6 +13,9 @@ router.get('/',async (req,res)=>{
 })
 
 router.post('/addRecord',auth, async (req,res) => {
+const{error} = Record.validate(req.body); 
+if (error) return res.status(400).send(error.details[0].message);
+
 const {tool_id, chamber_Num, user_id, description, status} = req.body;
 let res_status= 200;
 let data = {};
@@ -57,16 +60,13 @@ router.get('/:toolId/:chamber', async (req, res) => {
 
   router.put('/:recordId',auth,async(req,res)=>{
     //find the given record
-    /*const record = await Record.findByIdAndUpdate(req.params.recordId,{
-        description : req.body.description
-        
-    });*/
     const record = await Record.findOneAndUpdate(req.params.recordId,{
-        description : req.body.description
+        description : req.body.description,
+        date: Date.now().toFixed(),
+        status: req.body.status
     });
     if(!record) return res.status(404).send('record not found');
-    const response = record
-    res.json(response);
+    res.json(record);
   });
 
   

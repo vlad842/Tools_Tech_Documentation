@@ -13,7 +13,11 @@ const Record= mongoose.model('Record',new mongoose.Schema({
 
    chamber_Num :{
         type : Number,
-        required : true
+   },
+
+   chamber_kind: {
+        type : String ,
+        enum : ['RTC','RC','TI','PLY','BE']
    },
 
    user_id : {
@@ -36,14 +40,16 @@ const Record= mongoose.model('Record',new mongoose.Schema({
 
     status: {
         type: String, 
-        enum :['failure', 'scheduled maintenance']
+        enum :['failure', 'scheduled maintenance', 'fixed' ,'in progress']
     }
 }));
 
 function validateRecord(record){
     const schema = {
         tool_id : Joi.string().required(),
-        chamber_Num : Joi.number().min(1).max(5).required()
+        chamber_Num : Joi.number().min(1).max(5),
+        chamber_kind : Joi.string().valid(['RTC','RC','TI','PLY','BE']),
+        status :Joi.String().valid(['failure', 'scheduled maintenance', 'fixed' ,'in progress']).required()
     };
     return Joi.validate(record,schema);
 }
