@@ -2,8 +2,10 @@ const express=require('express');
 const mongoose = require('mongoose');
 const env = require('dotenv').config();
 const winston = require('winston');
+const cors = require('cors');
 const app= express();
 
+app.use(cors());
 require('./startup/db')();
 require('./startup/config');
 require('./startup/logging');
@@ -12,7 +14,9 @@ require('./startup/routes')(app);
     console.error('FATAL ERROR : jwtPrivateKey is not defined');
     process.exit(1);
 }*/
+
 app.set('port',process.env.PORT || 3000 );
+
 //app.use(express.json());
 //app.use(routes);
 /*Fill in connection string
