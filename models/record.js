@@ -11,13 +11,8 @@ const Record= mongoose.model('Record',new mongoose.Schema({
         required : true
    },
 
-   chamber_Num :{
+   chamber_num :{
         type : Number,
-   },
-
-   chamber_kind: {
-        type : String ,
-        enum : ['RTC','RC','TI','PLY','BE']
    },
 
    user_id : {
@@ -47,11 +42,13 @@ const Record= mongoose.model('Record',new mongoose.Schema({
 function validateRecord(record){
     const schema = {
         tool_id : Joi.string().required(),
-        chamber_Num : Joi.number().min(1).max(5),
+        description : Joi.string().required(),
+        chamber_num : Joi.number().min(1).max(5).required(),
         chamber_kind : Joi.string().valid(['RTC','RC','TI','PLY','BE']),
-        status :Joi.String().valid(['failure', 'scheduled maintenance', 'fixed' ,'in progress']).required()
+        status :Joi.string().valid(['failure', 'scheduled maintenance', 'fixed' ,'in progress'])
     };
     return Joi.validate(record,schema);
 }
 
 exports.Record=Record;
+exports.validateRecord = validateRecord;

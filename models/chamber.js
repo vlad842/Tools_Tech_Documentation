@@ -10,7 +10,7 @@ const ChamberSchema=new mongoose.Schema({
     kind : {
         type: String,
         required : true,
-        enum:['RTC','RC','TI','PLY','BE']
+        enum:['RCT','RC','TI','PLY','BE']
     }
 });
 
@@ -19,7 +19,7 @@ const Chamber = mongoose.model('Chamber',ChamberSchema);
 function validateChamber(chamber){
     const schema = {
         serialNumber : joi.Number().min(1).max(5).required(),
-        kind : joi.String().required().maxlength(3).minlength(2)
+        kind : joi.string().required().maxlength(3).minlength(2)
     };
     return Joi.validate(chamber , schema);
 }

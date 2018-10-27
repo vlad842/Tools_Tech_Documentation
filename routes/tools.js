@@ -23,4 +23,21 @@ router.post('/addTool',auth,async (req,res)=>{
     res.status(status).json(data);
 });
 
+router.get('/getAllTools',auth,async (req,res)=>{
+    console.log("!");
+    let status =200;
+    let data = {};
+
+    try{
+        const allTools = await Tool.find({});
+        data = allTools;
+    }
+    catch(error){
+        data = error;
+        status = 400;
+    }
+    console.log('Data',data);
+    res.status(status).json(data);
+});
+
 module.exports = router;
