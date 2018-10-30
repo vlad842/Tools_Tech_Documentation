@@ -15,6 +15,10 @@ const Record= mongoose.model('Record',new mongoose.Schema({
         type : Number,
    },
 
+   chamber_index:{
+        type:Number,
+   },
+
    user_id : {
        type : mongoose.Schema.Types.ObjectId,
        required : true

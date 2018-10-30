@@ -9,7 +9,7 @@ router.post('/work', (req,res) => {
 router.get('/chamberKinds',(req,res)=>{
     //TODO: change to generic
     
-    const hardcoded_chamber_kinds = ['RCT','RC','TI','PLY','BE'];
+    const hardcoded_chamber_kinds = ['RTC','RC','TI','PLY','BE'];
     res.status(200).json(hardcoded_chamber_kinds);
 })
 
