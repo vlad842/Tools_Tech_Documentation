@@ -20,7 +20,7 @@ const Tool = mongoose.model('Tool', new mongoose.Schema({
 
 function validateTool(tool){
     const schema = {
-        serialNumber : Joi.string().length(6).required,
+        serialNumber : Joi.string().length(6).required(),
         chambers : Joi.object(ChamberSchema).array().minlength(4).maxlength(5).required(),
     } 
     return Joi.validate(tool,schema);
