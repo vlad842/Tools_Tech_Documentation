@@ -151,6 +151,4 @@ router.get('/:toolId/:chamber', async (req, res) => {
     res.json(record);
   });
 
-  
-
 module.exports = router;
