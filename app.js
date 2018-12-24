@@ -10,6 +10,7 @@ require('./startup/db')();
 require('./startup/config');
 require('./startup/logging');
 require('./startup/routes')(app);
+require('./startup/prod')(app);
 /*if(!process.env.SECRET_KEY){
     console.error('FATAL ERROR : jwtPrivateKey is not defined');
     process.exit(1);

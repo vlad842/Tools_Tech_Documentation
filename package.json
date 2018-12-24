@@ -2,20 +2,26 @@
   "name": "Tools_Tech_Documentation",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "engines": {
+    "node" : "8.11.3"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^3.0.2",
+    "compression": "^1.7.3",
     "config": "^2.0.1",
     "cors": "^2.8.4",
     "dotenv": "^6.1.0",
     "express": "^4.16.3",
     "express-async-errors": "^3.1.1",
+    "helmet": "^3.15.0",
     "joi": "^13.7.0",
     "joi-objectid": "^2.0.0",
     "jsonwebtoken": "^8.3.0",

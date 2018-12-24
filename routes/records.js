@@ -166,13 +166,10 @@ router.get('/:toolId/:chamber', async (req, res) => {
             {
                 query.unshift({'$match':{tool_id}});
 
-<<<<<<< HEAD
             }
         }
     const records = await Record.aggregate(query);
     return records;
   }
 
-=======
->>>>>>> b9e147c7dc4d62cd9ad29350a6373e2edf6e668b
 module.exports = router;
