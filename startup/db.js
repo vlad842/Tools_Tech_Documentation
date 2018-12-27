@@ -1,9 +1,11 @@
+const winston = require('winston');
 const mongoose = require('mongoose');
+const config = require('config');
 
 module.exports = function (){
-    mongoose.connect('mongodb://localhost/tools_tech_doc_db',{useNewUrlParser:true})
-    .then(()=>console.log('connected to mongo'))
-    .catch(err=>console.error('couldnt connect to mongoDB',err));
+    const db = config.get('db');
+    mongoose.connect(db,{useNewUrlParser:true})
+      .then(() => winston.info(`Connected to ${db}...`));
     mongoose.set('useCreateIndex', true);
     mongoose.set('useFindAndModify', false);
 }

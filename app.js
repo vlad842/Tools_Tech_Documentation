@@ -11,10 +11,6 @@ require('./startup/config');
 require('./startup/logging');
 require('./startup/routes')(app);
 require('./startup/prod')(app);
-/*if(!process.env.SECRET_KEY){
-    console.error('FATAL ERROR : jwtPrivateKey is not defined');
-    process.exit(1);
-}*/
 
 app.set('port',process.env.PORT || 3000 );
 
@@ -26,4 +22,6 @@ mongoose.connect('mongodb://localhost/tools_tech_doc_db',{useNewUrlParser:true})
     .catch(err=>console.error('couldnt connect to mongoDB',err));
 mongoose.set('useCreateIndex', true);*/
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+//app.listen(port, () => console.log(`Listening on port ${port}...`));
+const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
+module.exports = server;
