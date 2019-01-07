@@ -1,0 +1,4 @@
+{
+    "jwtPrivateKey": "SECRET_KEY",
+    "db": "TOOLS_DB"
+}
