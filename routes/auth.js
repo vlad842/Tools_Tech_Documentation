@@ -28,6 +28,8 @@ router.post('/login',async(req,res)=>{
     if(!validPassword) return res.status(400).json({ msg: 'Invalid email or password' });
 
     const token = user.generateAuthToken();
-    return res.status(200).json({token});
+    const isAdmin = user.isAdmin ? true : false;
+    
+    return res.status(200).json({token,isAdmin});
 });
 module.exports = router;
