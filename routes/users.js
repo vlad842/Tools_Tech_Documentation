@@ -24,14 +24,32 @@ router.post('/signup',async (req,res)=>{
         
         const result = await User.insertMany([userToInsert]);
         data = result;
+        const token = userToInsert.generateAuthToken();
+        res.status(status).header('x-auth',token).json(_.pick(userToInsert, ['full_name', 'email']));
     }
     catch(error){
 
         status = 400;
         data = error;
+        res.status(status).json(data);
     }
-    const token = userToInsert.generateAuthToken();
-    res.status(status).header('x-auth',token).json(_.pick(userToInsert, ['full_name', 'email']));
+
+});
+
+router.get('/allUsers',auth,admin,async(req,res)=>{
+    let status = 200;
+    let data ={};
+
+    try{
+        const all_users = await User.find({}).select({_id:1,full_name:1,email:1,is_admin:1});
+        data=all_users;
+    }
+    catch(error){
+        status = 400;
+        data = error;
+    }
+
+    res.status(status).json(data);
 });
 
 router.delete('/:id',auth,admin, async (req, res) => {
