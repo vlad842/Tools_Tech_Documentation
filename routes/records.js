@@ -12,25 +12,18 @@ router.get('/',async (req,res)=>{
     res.status(200).json(records);
 })
 
-
-
-
-
-
-
-
 router.post('/addRecord',auth, async (req,res) => {
 const{error} = validateRecord(req.body); 
 if (error) return res.status(400).send(error.details[0].message);
 
-const {tool_id, chamber_num, description, status} = req.body;
+const {tool_id, chamber_num, headline, tags, event, description, status} = req.body;
 let res_status= 200;
 let data = {};
 
 let user_id = req.user.id;
 try {
     const chamber_index = chamber_num - 1;
-    const recordToInsert = new Record({tool_id, chamber_index, chamber_num, user_id, description, status});
+    const recordToInsert = new Record({tool_id, chamber_index, chamber_num, headline, tags, event, user_id, description, status});
     const result = await recordToInsert.save();
     data= result;
     

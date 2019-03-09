@@ -6,7 +6,8 @@ const Tag = mongoose.model('Tag', new mongoose.Schema({
 
     name : {
         type : String,
-        required : true
+        required : true,
+        unique : true
     },
 
     color : {
@@ -20,7 +21,8 @@ const Tag = mongoose.model('Tag', new mongoose.Schema({
 
 function validateTag(tag){
     const schema = {
-        name : Joi.string().required()
+        name : Joi.string().required(),
+        color : Joi.string()
     };
     return Joi.validate(tag,schema);
 }

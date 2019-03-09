@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const mongoose = require('mongoose');
 const {Tag, validateTag} = require('../models/tag');
+const {Record} = require('../models/record');
 
 router.get('/',auth, async (req,res)=>{
     let status = 200;
@@ -18,6 +19,17 @@ router.get('/',auth, async (req,res)=>{
     res.status(status).json(data);
 
 });
+
+router.get('/:ids',async (req,res)=>{
+  //  const params = [req.params.ids].concat(req.params[0].split('/').slice(1));
+   try {
+    let tags = await Tag.find({'_id' :{$is: req.params}});
+   } catch (error) {
+       res.status(400).send('tags were not found');
+   } 
+   res.status(200).json(tags);
+    
+})
 
 router.post('/add' ,auth, async(req,res)=>{
     const{error} = validateTag(req.body); 
@@ -43,9 +55,33 @@ router.post('/add' ,auth, async(req,res)=>{
 
 });
 
-router.delete('/remove', (req,res)=>{
+router.delete('/remove/:id', async (req,res)=>{
+    //if(!result) res.status(404).json('can not find tag');
+    let data = {};
 
-    //TODO:
+   try {
+    const result = await Tag.findByIdAndRemove(req.params.id);
+    const recordsWithTag = await Record.find({tags: req.params.id});
+    data = recordsWithTag;
+
+    //after removing the tag from its own collection, we need to delete it from all the records
+    for(let i =0; i<data.length; i++){
+        Record.findByIdAndUpdate(
+            { _id: data[i].id } , 
+            { $pullAll : {tags:[req.params.id] } },
+            {new :true},
+            function(err,data){} );
+        }
+
+   } catch (error) {
+       data = error
+       res.status(400).send(data);
+   }
+
+    
+
+  
+    res.send(Record.collection.tags);
 
 });
 
