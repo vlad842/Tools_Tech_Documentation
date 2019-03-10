@@ -8,22 +8,24 @@ const {Tag} = require('../models/tag');
 const {Record,validateRecord} = require('../models/record');
 const mongoose = require('mongoose');
 
-router.post('/addComment', async (req,res)=>{
+router.post('/addComment',auth, async (req,res)=>{
     // when posting a comment , we first find the relevant record and user and then 
     //we push the comment to the 'comments' collection in the record
     //TODO: req validation
     status = 200;
     data = {};
-    const {record_id, user_id, content, tag_ids} = req.body;
+    const {record_id, content, tag_ids} = req.body;
+    let user_id = req.user.id;
+
 
     try {
        let record = await Record.findById(record_id);
-       const user = await User.findById(user_id);
        const tags = await Tag.find({_id: {$all : tag_ids} });
        commentToInsert = new Comment({record_id, user_id, content, tags});
        commentToInsert.tag_ids.push(tag_ids);
        const result = await commentToInsert.save();
        record.comments.push(commentToInsert);
+       record.tags.addToSet(tag_ids);
        const updatedRecord = await record.save();
        data = {result, updatedRecord};
 
