@@ -74,42 +74,178 @@ router.get('/:toolId/:chamber', async (req, res) => {
     let match_obj = {};
     let query = [
         {
+            $unwind:{
+                path:"$comments",
+                preserveNullAndEmptyArrays: true
+            }
+        }
+        ,
+        {
+             $addFields: { 
+                 "comment_tags_ids": { $ifNull: [ "$comments.tag_ids", [] ] },
+                "comments": { $ifNull: [ "$comments", [] ] } 
+                } 
+        }
+        ,
+        {
+            $unwind:{
+                path:"$comment_tags_ids",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+             $addFields: { 
+                 "comment_tags_ids": { $ifNull: [ "$comment_tags_ids", [] ] }
+                } 
+        },
+        {
+            $lookup:{
+                        
+                from: "tag",
+                localField: "comment_tags_ids",
+                foreignField: "_id",
+                as: "tag_data"
+                       
+            }
+        }
+        ,
+        {
+                $unwind:{
+                    path:"$tag_data",
+                preserveNullAndEmptyArrays: true
+                }
+        }
+        ,
+        {
+             $addFields: { 
+                 "tag_data": { $ifNull: [ "$tag_data", {} ] }
+                } 
+        }
+        ,
+        {
+            $lookup:{
+                        
+                from: "users",
+                localField: "comments.user_id",
+                foreignField: "_id",
+                as: "user_data"
+                       
+            }
+        }
+        ,
+        {
+                $unwind:{
+                    path:"$user_data",
+                preserveNullAndEmptyArrays: true
+                }
+        }
+        ,
+        {
+            $group:{
+                _id:{
+                    record_id:"$_id",
+                    comment_id:"$comments._id",
+                    comment_content:"$comments.content",
+                    comment_date:"$comments.date",
+                    tool_id:"$tool_id",
+                    chamber_index:"$chamber_index",
+                    chamber_num:"$chamber_num",
+                    headline:"$headline",
+                    event:"$event",
+                    user_id:"$user_id",
+                    description:"$description",
+                    status:"$status",
+                    date:"$date",
+                    user_full_name:"$user_data.full_name"
+                    
+                    },
+                tags:{$push:"$tag_data"}
+            }
+        },
+        {
+            $group:{
+                _id:{
+                    record_id:"$_id.record_id",
+                    tool_id:"$_id.tool_id",
+                    chamber_index:"$_id.chamber_index",
+                    chamber_num:"$_id.chamber_num",
+                    headline:"$_id.headline",
+                    event:"$_id.event",
+                    user_id:"$_id.user_id",
+                    description:"$_id.description",
+                    status:"$_id.status",
+                    date:"$_id.date",
+                    },
+                comments:{
+                    $push:{
+                        tags:"$tags",
+                        user_full_name:"$_id.user_full_name",
+                        comment_content:"$_id.comment_content",
+                        comment_date:"$_id.comment_date"
+                    }
+                }
+            }
+        },
+        {
+            $project:{
+                    _id:"$_id.record_id",
+                    tool_id:"$_id.tool_id",
+                    chamber_index:"$_id.chamber_index",
+                    chamber_num:"$_id.chamber_num",
+                    headline:"$_id.headline",
+                    event:"$_id.event",
+                    user_id:"$_id.user_id",
+                    description:"$_id.description",
+                    status:"$_id.status",
+                    date:"$_id.date",
+                    comments:1
+            }    
+        },
+        {
             $lookup:{
                 
                  from: "tools",
                  localField: "tool_id",
                  foreignField: "_id",
-                 as: "tool_doc"
+                 as: "tool_data"
                
             }
         },
-        {
+        /*{
             $project:{
                 description: "$description",
                 chamber_num: "$chamber_num",
                 chamber_index: "$chamber_index",
                 user_id: "$user_id",
                 date: "$date",
+                comments:1,
                 tool_data: { $arrayElemAt: ["$tool_doc", 0 ] }
+            }
+        },*/
+        {
+            $unwind:{
+                path:"$tool_data"
             }
         },
         {
             $project:{
-                description: "$description",
-                user_id: "$user_id",
-                date: "$date",
+                description: 1,
+                user_id: 1,
+                date: 1,
                 serial_number: "$tool_data.serialNumber",
-                chamber_num: "$chamber_num",
+                chamber_num: 1,
+                comments:1,
                 chamber_data: { $arrayElemAt: ["$tool_data.chambers", "$chamber_index" ] }
             }
         },
         {
             $project:{
-                description: "$description",
-                user_id: "$user_id",
-                date: "$date",
-                serial_number: "$serial_number",
-                chamber_num: "$chamber_num",
+                description: 1,
+                user_id: 1,
+                date: 1,
+                serial_number: 1,
+                chamber_num: 1,
+                comments:1,
                 chamber_kind: "$chamber_data.kind"
             }
         },
@@ -119,27 +255,34 @@ router.get('/:toolId/:chamber', async (req, res) => {
                  from: "users",
                  localField: "user_id",
                  foreignField: "_id",
-                 as: "user_doc"
+                 as: "user_data"
                
             }
         },
-        {
+        /*{
             $project:{
-                description: "$description",
-                date: "$date",
-                serial_number: "$serial_number",
-                chamber_num: "$chamber_num",
-                chamber_kind: "$chamber_kind",
+                description:1,
+                date: 1,
+                serial_number: 1,
+                chamber_num: 1,
+                chamber_kind: 1,
+                comments:1,
                 user_data: { $arrayElemAt: ["$user_doc", 0 ] }
+            }
+        },*/
+        {
+            $unwind:{
+                path:"$user_data"
             }
         },
         {
             $project:{
-                description: "$description",
-                date: "$date",
-                serial_number: "$serial_number",
-                chamber_num: "$chamber_num",
-                chamber_kind: "$chamber_kind",
+                description: 1,
+                date: 1,
+                serial_number: 1,
+                chamber_num: 1,
+                chamber_kind: 1,
+                comments:1,
                 user_name: "$user_data.full_name"
             }
         },
@@ -162,6 +305,12 @@ router.get('/:toolId/:chamber', async (req, res) => {
             }
         }
     const records = await Record.aggregate(query);
+
+    records.forEach((record)=>{
+        console.log(record);
+        if(record.comments.length === 1 && record.comments[0].comment_content.length === 0)
+            record.comments = [];
+    })
     return records;
   }
 
