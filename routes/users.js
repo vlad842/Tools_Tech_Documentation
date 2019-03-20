@@ -8,14 +8,33 @@ const {User} = require('./../models/user');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
+async function encrypt(data){
+    const salt = await bcrypt.genSalt(10);
+    const encrypted = await bcrypt.hash(data, salt);
+    return encrypted;
+}
+
+router.post('/activate/:user_id', async(req,res)=>{
+    try {
+        const newPassword = await encrypt(req.body.password);
+        let update = {password : newPassword, isActive : true}
+        const id = req.params.user_id;
+        const user = await User.findByIdAndUpdate(id, update,{new: true}, (error, result)=>{})
+        res.status(200).send(user);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+    
+});
+
 router.post('/signup',async (req,res)=>{
     const {full_name,email,password, isAdmin} = req.body;
     let userToInsert = await User.findOne({email : req.body.email});
-    if(userToInsert) return res.status(400).send('user already registered');
+    if(userToInsert) 
+        return res.status(400).send('user already registered');
 
      userToInsert = new User({full_name,email,password, isAdmin}) ;
-     const salt = await bcrypt.genSalt(10);
-     userToInsert.password = await bcrypt.hash(userToInsert.password, salt);
+     userToInsert.password = await encrypt(password);
 
     let status = 200;
     let data = {};
