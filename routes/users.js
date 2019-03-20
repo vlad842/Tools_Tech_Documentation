@@ -4,7 +4,7 @@ const env = require('dotenv').config();
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const jwt = require('jsonwebtoken');
-const User = require('./../models/user');
+const {User} = require('./../models/user');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
@@ -45,6 +45,7 @@ router.get('/allUsers',auth,admin,async(req,res)=>{
         data=all_users;
     }
     catch(error){
+        console.log(error);
         status = 400;
         data = error;
     }
