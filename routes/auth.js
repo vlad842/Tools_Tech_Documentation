@@ -30,6 +30,6 @@ router.post('/login',async(req,res)=>{
     const token = user.generateAuthToken();
     const isAdmin = user.isAdmin ? true : false;
     
-    return res.status(200).json({token,isAdmin});
+    return res.status(200).json({token,isAdmin,});
 });
 module.exports = router;

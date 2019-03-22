@@ -59,9 +59,9 @@ router.get('/:toolId/:chamber', async (req, res) => {
 
   router.put('/:recordId',auth,async(req,res)=>{
     //find the given record
+    let update = {};
+    req.body
     const record = await Record.findOneAndUpdate(req.params.recordId,{
-        headline : req.body.headline,
-        description : req.body.description,
         date: Date.now().toFixed(),
         status: req.body.status
     });

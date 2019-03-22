@@ -22,10 +22,15 @@ router.post('/addComment',auth, async (req,res)=>{
        let record = await Record.findById(record_id);
        const tags = await Tag.find({_id: {$all : tag_ids} });
        commentToInsert = new Comment({record_id, user_id, content, tags});
-       commentToInsert.tag_ids.push(tag_ids);
+      
+       if(tag_ids.length){
+        commentToInsert.tag_ids.push(tag_ids);
+        record.tags.addToSet(tag_ids);
+
+       }
+            
        const result = await commentToInsert.save();
        record.comments.push(commentToInsert);
-       record.tags.addToSet(tag_ids);
        const updatedRecord = await record.save();
        data = {result, updatedRecord};
 
