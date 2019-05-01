@@ -25,7 +25,6 @@ router.post('/addTool',auth,async (req,res)=>{
 });
 
 router.get('/getAllTools',auth,async (req,res)=>{
-    console.log("!");
     let status =200;
     let data = {};
 
@@ -37,7 +36,6 @@ router.get('/getAllTools',auth,async (req,res)=>{
         data = error;
         status = 400;
     }
-    console.log('Data',data);
     res.status(status).json(data);
 });
 

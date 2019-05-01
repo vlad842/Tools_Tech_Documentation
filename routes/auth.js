@@ -8,7 +8,6 @@ const bcrypt = require('bcrypt');
 
 router.post('/login',async(req,res)=>{
     const { email, password } = req.body;
-    console.log(req.body);
 
 
     /*const is_first_time =  (await User.aggregate([{$project:{_id:1}}])).length === 0;

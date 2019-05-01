@@ -6,11 +6,13 @@ const {Chamber} = require('../models/chamber');
 const {User} = require('../models/user')
 const {Record,validateRecord} = require('../models/record');
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
-router.get('/',async (req,res)=>{
+
+/*router.get('/',async (req,res)=>{
     const records = await getRecordes(undefined,undefined);
     res.status(200).json(records);
-})
+})*/
 
 router.post('/addRecord',auth, async (req,res) => {
 const{error} = validateRecord(req.body); 
@@ -34,34 +36,48 @@ try {
 res.status(res_status).json(data);
 });
 
-router.get('/:toolId', async (req,res)=>{
+/*router.get('/:toolId', async (req,res)=>{
         const tool = await Tool.findById(req.params.toolId);
         if(!tool) return res.status(404).send('tool number is not valid');
         const record = await getRecordes(tool._id,undefined);
         res.status(200).json(record);
-})
+})*/
 
-router.get('/:toolId/:chamber', async (req, res) => {
+router.get('/:tag_id/:tool_id/:chamber_number', async (req, res) => {
+    let {tag_id, tool_id, chamber_number} = req.params;
+    tag_id = tag_id !== '*'? tag_id : undefined;
+    tool_id = tool_id !== '*'? tool_id : undefined;
+    chamber_number = chamber_number !== '*'? chamber_number : undefined;
     try {
-        ///find the given tool and chamber
-        const tool = await Tool.findById(req.params.toolId);
-        if(!tool) return res.status(404).send('tool number is not valid');
-        const chamber = tool.chambers[req.params.chamber - 1];
+        ///find the given tool and chamber for validation
+        if(tool_id){
+            const tool = await Tool.findById(tool_id);
+            if(tool){
+                tool_id = tool._id;
+                if(chamber_number){
+                    const chamber = tool.chambers[chamber_number - 1];
+                    chamber_number = chamber.serialNumber;
+                }
+            }
+            else{
+                return res.status(404).send('tool number is not valid');
+            }
 
+        }
         //find if a record exists for given tool and chamber
-        const record = await getRecordes(tool._id,chamber.serialNumber);
+        const record = await getRecordes(tag_id,tool_id,chamber_number);
 
         res.status(200).json(record);
     } catch (error) {
-        console.log(error.body);
+        console.log(error);
     }
   });
 
   router.put('/:recordId',auth,async(req,res)=>{
     //find the given record
-    let update = {};
-    req.body
     const record = await Record.findOneAndUpdate(req.params.recordId,{
+        headline : req.body.headline,
+        description : req.body.description,
         date: Date.now().toFixed(),
         status: req.body.status
     });
@@ -70,7 +86,7 @@ router.get('/:toolId/:chamber', async (req, res) => {
   });
 
 
-  async function getRecordes(tool_id, chamber_num)
+  async function getRecordes(tag_id,tool_id, chamber_num)
   {
     let match_obj = {};
     let query = [
@@ -301,23 +317,27 @@ router.get('/:toolId/:chamber', async (req, res) => {
         }
         ];
 
-        if(tool_id)
-        {            
-            if(chamber_num)
-            {
-                query.unshift({'$match':{tool_id,chamber_num}});
+    if(tag_id){
+        let obj = {'$match':{tags:ObjectId(tag_id)}};
+        console.log("!@#!@#",obj);
+        query.unshift(obj);
+    }    
+    if(tool_id)
+    {            
+        if(chamber_num)
+        {
+            query.unshift({'$match':{tool_id,chamber_num}});
 
-            }
-            else
-            {
-                query.unshift({'$match':{tool_id}});
-
-            }
         }
+        else
+        {
+            query.unshift({'$match':{tool_id}});
+
+        }
+    }
     const records = await Record.aggregate(query);
 
     records.forEach((record)=>{
-        console.log(record);
         if(record.comments.length === 1 && record.comments[0].comment_content.length === 0)
             record.comments = [];
     })

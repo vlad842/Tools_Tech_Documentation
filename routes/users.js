@@ -64,7 +64,6 @@ router.get('/allUsers',auth,admin,async(req,res)=>{
         data=all_users;
     }
     catch(error){
-        console.log(error);
         status = 400;
         data = error;
     }
