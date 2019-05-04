@@ -43,11 +43,12 @@ res.status(res_status).json(data);
         res.status(200).json(record);
 })*/
 
-router.get('/:tag_id/:tool_id/:chamber_number', async (req, res) => {
-    let {tag_id, tool_id, chamber_number} = req.params;
+router.get('/:tag_id/:tool_id/:chamber_number/:status', async (req, res) => {
+    let {tag_id, tool_id, chamber_number,status} = req.params;
     tag_id = tag_id !== '*'? tag_id : undefined;
     tool_id = tool_id !== '*'? tool_id : undefined;
     chamber_number = chamber_number !== '*'? chamber_number : undefined;
+    status = status !== '*'? status : undefined;
     try {
         ///find the given tool and chamber for validation
         if(tool_id){
@@ -65,7 +66,7 @@ router.get('/:tag_id/:tool_id/:chamber_number', async (req, res) => {
 
         }
         //find if a record exists for given tool and chamber
-        const record = await getRecordes(tag_id,tool_id,chamber_number);
+        const record = await getRecordes(tag_id,tool_id,chamber_number,status);
 
         res.status(200).json(record);
     } catch (error) {
@@ -86,7 +87,7 @@ router.get('/:tag_id/:tool_id/:chamber_number', async (req, res) => {
   });
 
 
-  async function getRecordes(tag_id,tool_id, chamber_num)
+  async function getRecordes(tag_id,tool_id, chamber_num,status)
   {
     let match_obj = {};
     let query = [
@@ -319,9 +320,12 @@ router.get('/:tag_id/:tool_id/:chamber_number', async (req, res) => {
 
     if(tag_id){
         let obj = {'$match':{tags:ObjectId(tag_id)}};
-        console.log("!@#!@#",obj);
         query.unshift(obj);
     }    
+    if(status){
+        let obj = {'$match':{status}};
+        query.unshift(obj);
+    }
     if(tool_id)
     {            
         if(chamber_num)
